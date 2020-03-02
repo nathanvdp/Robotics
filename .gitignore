@@ -1,0 +1,5 @@
+/lib/
+/include/
+/bin/
+.Python
+.DS_Store
