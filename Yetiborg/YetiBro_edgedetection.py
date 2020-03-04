@@ -48,7 +48,7 @@ def PerformMove(driveLeft, driveRight, numSeconds):
     # Turn the motors off
     ZB.MotorsOff()
  
-video_capture = cv2.VideoCapture(0)
+video_capture = cv2.VideoCapture(-1)
 video_capture.set(3, 160) #Width
 video_capture.set(4, 120) #Height
       
