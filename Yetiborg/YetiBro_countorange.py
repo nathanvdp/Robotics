@@ -49,8 +49,8 @@ def PerformMove(driveLeft, driveRight, numSeconds):
     ZB.MotorsOff()
  
 video_capture = cv2.VideoCapture(-1)
-#video_capture.set(3, 160) #Width
-#video_capture.set(4, 120) #Height
+video_capture.set(3, 160) #Width
+video_capture.set(4, 120) #Height
 
 orange_lines = 0
 
@@ -62,7 +62,7 @@ def findContours():
         ret, frame = video_capture.read()
 
         # Crop the image (but actually we dont)
-        crop_img = frame#[60:120, 0:160]
+        crop_img = frame[60:120, 0:160]
 
         # Convert to HSV
         hsv = cv2.cvtColor(crop_img, cv2.COLOR_BGR2HSV)
@@ -90,6 +90,7 @@ try:
             c = max(contours, key=cv2.contourArea)
             if cv2.contourArea(c) >= 100 and orange_lines < 1:
                 orange_lines = 1
+                PerformMove(1.0, 1.0, 0.05)
             elif cv2.contourArea(c) >= 100 and orange_lines == 1:
                 print("Found first line! on to the next..")
                 PerformMove(1.0, 1.0, 0.05)
