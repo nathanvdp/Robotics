@@ -47,18 +47,24 @@ def PerformMove(driveLeft, driveRight, numSeconds):
     time.sleep(numSeconds)
     # Turn the motors off
     ZB.MotorsOff()
- 
+
+def initAngle():
+    PerformMove(0.3, 1.0, 0.25)
+
 video_capture = cv2.VideoCapture(-1)
-#video_capture.set(3, 160) #Width
-#video_capture.set(4, 120) #Height
-      
+video_capture.set(3, 160) #Width
+video_capture.set(4, 120) #Height
+
+
 try:
+    raw_input("Press Enter to start.")
+    initAngle()
     while(True):
         # Capture the frames
         ret, frame = video_capture.read()
 
         # Crop the image (but actually we dont)
-        crop_img = frame#[60:120, 0:160]
+        crop_img = frame[60:120, 0:160]
 
         # Convert to HSV
         hsv = cv2.cvtColor(crop_img, cv2.COLOR_BGR2HSV)
@@ -75,40 +81,40 @@ try:
         if len(contours) > 0:
 
             c = max(contours, key=cv2.contourArea)
-            M = cv2.moments(c)
-'''
-            cx = 0.0
-            cy = 0.0
-            if M['m00'] != 0:
+            if cv2.contourArea(c) >= 100:
+
+                M = cv2.moments(c)
+
+                #cx = 80.0
+                #cy = 30.0
+                #if M['m00'] != 0:
+                #    cx = int(M['m10']/M['m00'])
+                #    cy = int(M['m01']/M['m00'])
+
                 cx = int(M['m10']/M['m00'])
                 cy = int(M['m01']/M['m00'])
-'''
-            cx = int(M['m10']/M['m00'])
-            cy = int(M['m01']/M['m00'])
-'''
-            cv2.line(crop_img,(cx,0),(cx,720),(255,0,0),1)
-            cv2.line(crop_img,(0,cy),(1280,cy),(255,0,0),1)
 
-            cv2.drawContours(crop_img, contours, -1, (0,255,0), 1)
-'''
-            if cx >= 120:
-                print("Turn Left!")
-                PerformMove(-1.0, 1.0, 0.02)
+                #cv2.line(crop_img,(cx,0),(cx,720),(255,0,0),1)
+                #cv2.line(crop_img,(0,cy),(1280,cy),(255,0,0),1)
 
-            if cx < 120 and cx > 50:
-                print("On Track!")
-                PerformMove(1.0, 1.0, 0.02)
+                #cv2.drawContours(crop_img, contours, -1, (0,255,0), 1)
 
-            if cx <= 50:
-                print("Turn Right")
-                PerformMove(1.0, -1.0, 0.02)
+                if cx >= 100:
+                    print("Turn Left!")
+                    PerformMove(0.6, 1.0, 0.01)
+
+                if cx < 100 and cx > 60:
+                    orange_lines = 3
+                    print("On Track!")
+                    PerformMove(1.0, 1.0, 0.01)
+
+                if cx <= 60:
+                    print("Turn Right")
+                    PerformMove(1.0, 0.5, 0.01)
 
         else:
             print("I don't see the line")
-            PerformMove(-1.0, -0.5, 0.05)
-            PerformMove(-1.0, -1.0, 0.05)
-            PerformMove(-0.5, -1.0, 0.05)
-            PerformMove(-1.0, -1.0, 0.05)
+            PerformMove(1.0, 1.0, 0.01)
 
         #Display the resulting frame
 #        cv2.imshow('frame',crop_img)
