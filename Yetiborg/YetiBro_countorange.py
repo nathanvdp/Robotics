@@ -31,10 +31,7 @@ voltageIn = 9.0                         # Total battery voltage to the ZeroBorg 
 voltageOut = 9.0                        # Maximum motor voltage
 
 # Setup the power limits
-if voltageOut > voltageIn:
-    maxPower = 0.5
-else:
-    maxPower = voltageOut / float(voltageIn)
+maxPower = 1.0
 
 # Function to perform a general movement
 def PerformMove(driveLeft, driveRight, numSeconds):
@@ -55,7 +52,8 @@ video_capture.set(4, 120) #Height
 orange_lines = 0
 
 def initAngle():
-    PerformMove(-1.0, 1.0, 0.5)
+    # Start angle
+    PerformMove(0.2, 1.0, 0.25)
 
 def findContours():
     # Capture the frames
@@ -76,9 +74,13 @@ def findContours():
         return cv2.findContours(mask_orange.copy(), 1, cv2.CHAIN_APPROX_NONE)
 
 
-
+max_cx = 1000
       
 try:
+
+    ret, frame = video_capture.read()
+    raw_input("Press Enter to start")
+
     initAngle()
     while(True):
         
@@ -88,49 +90,61 @@ try:
         if len(contours) > 0:
 
             c = max(contours, key=cv2.contourArea)
-            if cv2.contourArea(c) >= 100 and orange_lines < 1:
+            if cv2.contourArea(c) >= 500 and orange_lines < 1:
                 orange_lines = 1
                 PerformMove(1.0, 1.0, 0.05)
-            elif cv2.contourArea(c) >= 100 and orange_lines == 1:
+            elif cv2.contourArea(c) >= 500 and orange_lines == 1:
                 print("Found first line! on to the next..")
                 PerformMove(1.0, 1.0, 0.05)
-            elif cv2.contourArea(c) >= 100 and orange_lines > 1:
+            elif cv2.contourArea(c) >= 500 and orange_lines > 1:
                 M = cv2.moments(c)
-    '''
-                cx = 0.0
-                cy = 0.0
-                if M['m00'] != 0:
-                    cx = int(M['m10']/M['m00'])
-                    cy = int(M['m01']/M['m00'])
-    '''
+    
+                #cx = 0.0
+                #cy = 0.0
+                #if M['m00'] != 0:
+                #    cx = int(M['m10']/M['m00'])
+                #    cy = int(M['m01']/M['m00'])
+    
                 cx = int(M['m10']/M['m00'])
                 cy = int(M['m01']/M['m00'])
-    '''
-                cv2.line(crop_img,(cx,0),(cx,720),(255,0,0),1)
-                cv2.line(crop_img,(0,cy),(1280,cy),(255,0,0),1)
+    
+                #cv2.line(crop_img,(cx,0),(cx,720),(255,0,0),1)
+                #cv2.line(crop_img,(0,cy),(1280,cy),(255,0,0),1)
 
-                cv2.drawContours(crop_img, contours, -1, (0,255,0), 1)
-    '''
-                if cx >= 120:
+                #cv2.drawContours(crop_img, contours, -1, (0,255,0), 1)
+    
+                if cx >= 100 and orange_lines != 2:
                     print("Turn Left!")
-                    PerformMove(-1.0, 1.0, 0.02)
+                    PerformMove(0.5, 1.0, 0.01)
+                elif cx >= 100:
+                    print("Found second line!")
+                    if cx<max_cx:
+                        max_cx = cx
+                        # Recovery angle
+                        PerformMove(1.0, 0.4, 0.01)
+                    else:
+                        print("Start tracking normaly..")
+                        orange_lines = 3
+                        PerformMove(0.5, 1.0, 0.01)
 
-                if cx < 120 and cx > 50:
+                if cx < 100 and cx > 60:
+                    orange_lines = 3
                     print("On Track!")
-                    PerformMove(1.0, 1.0, 0.02)
+                    PerformMove(1.0, 1.0, 0.01)
 
-                if cx <= 50:
+                if cx <= 60:
                     print("Turn Right")
-                    PerformMove(1.0, -1.0, 0.02)
-            else:
-            print("Thought I saw something..")
-            PerformMove(1.0, 1.0, 0.05)
+                    PerformMove(1.0, 0.3, 0.01)
 
-        elif orange_lines = 1:
+            else:
+                print("Thought I saw something..")
+                PerformMove(1.0, 1.0, 0.01)
+
+        elif orange_lines == 1:
             orange_lines = 2
         else:
             print("Still blind..")
-            PerformMove(1.0, 1.0, 0.05)
+            PerformMove(1.0, 1.0, 0.01)
 
         #Display the resulting frame
 #        cv2.imshow('frame',crop_img)
