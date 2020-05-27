@@ -10,7 +10,6 @@ s.listen(2)
 while True:
     clientsocket, address = s.accept()
     print "Connection from " + str(address) + " has been established!"
-    #clientsocket.send(bytes("welcome to the server!"))
     if clientsocket != 0:
         break
 
@@ -44,23 +43,14 @@ class SampleListener(Leap.Listener):
 
         # Get hands
         for hand in frame.hands:
-            if hand.palm_position[0] < -80:
-                #print "left"
-                clientsocket.send(bytes("L"))
-            elif hand.palm_position[0] > 80:
-                #print "right"
-                clientsocket.send(bytes("R"))
-            else:
-                print "middle"
-            
-            if hand.palm_position[1]< 100:
-                clientsocket.send(bytes("X"))
-                clientsocket.close()
-                exit()
+            # Get wrist x-position
+            hand_pos = str(int(hand.palm_position[0]))
+            # Add padding for fixed size messages
+            hand_pos = hand_pos.rjust(4, ' ')
+            clientsocket.send(hand_pos.encode("utf-8"))
+            print(hand_pos)
+            return
 
-            # Get the hand's normal vector and direction
-            normal = hand.palm_normal
-            direction = hand.direction
         time.sleep(0.1)
 
     def state_string(self, state):
