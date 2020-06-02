@@ -5,7 +5,7 @@ We present a gesture controlled Pachinko game with auto-mated ball return. Using
 
 Minimal idea           |  Final project
 :-------------------------:|:-------------------------:
-![Minimal idea](schematic.png) | ![Final project](final.png)
+![Minimal idea](schematic.png) | ![Final project](final.jpg)
 
 # Usage
 
