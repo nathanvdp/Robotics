@@ -10,6 +10,9 @@ Minimal idea           |  Final project
 # Usage
 
 ## Cup slider
+To set up the socket connection, set the PCs local IP in LeapMotion.py and leap_robot.py. Any free port number can be used.
+LeapMotion.py has to be started first, from a PC that has a Leap connected. Afterwards run leap_robot.py from a Raspberry Pi to connect to the server.
+The connection will now be established and handtracking coordinates will be send to the Raspberry Pi.
 
 ## Lift
 
