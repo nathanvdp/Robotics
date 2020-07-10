@@ -57,21 +57,21 @@ def initAngle():
 
 def findContours():
     # Capture the frames
-        ret, frame = video_capture.read()
+    ret, frame = video_capture.read()
 
-        # Crop the image (but actually we dont)
-        crop_img = frame[60:120, 0:160]
+    # Crop the image (but actually we dont)
+    crop_img = frame[60:120, 0:160]
 
-        # Convert to HSV
-        hsv = cv2.cvtColor(crop_img, cv2.COLOR_BGR2HSV)
+    # Convert to HSV
+    hsv = cv2.cvtColor(crop_img, cv2.COLOR_BGR2HSV)
 
-        lower_orange = np.array([0,50, 50])
-        upper_orange = np.array([20, 255, 255])
+    lower_orange = np.array([0,50, 50])
+    upper_orange = np.array([20, 255, 255])
 
-        mask_orange = cv2.inRange(hsv, lower_orange, upper_orange)
+    mask_orange = cv2.inRange(hsv, lower_orange, upper_orange)
 
-        # Find the contours of the frame
-        return cv2.findContours(mask_orange.copy(), 1, cv2.CHAIN_APPROX_NONE)
+    # Find the contours of the frame
+    return cv2.findContours(mask_orange.copy(), 1, cv2.CHAIN_APPROX_NONE)
 
 
 max_cx = 1000
@@ -99,19 +99,8 @@ try:
             elif cv2.contourArea(c) >= 500 and orange_lines > 1:
                 M = cv2.moments(c)
     
-                #cx = 0.0
-                #cy = 0.0
-                #if M['m00'] != 0:
-                #    cx = int(M['m10']/M['m00'])
-                #    cy = int(M['m01']/M['m00'])
-    
                 cx = int(M['m10']/M['m00'])
                 cy = int(M['m01']/M['m00'])
-    
-                #cv2.line(crop_img,(cx,0),(cx,720),(255,0,0),1)
-                #cv2.line(crop_img,(0,cy),(1280,cy),(255,0,0),1)
-
-                #cv2.drawContours(crop_img, contours, -1, (0,255,0), 1)
     
                 if cx >= 100 and orange_lines != 2:
                     print("Turn Left!")
@@ -145,10 +134,7 @@ try:
         else:
             print("Still blind..")
             PerformMove(1.0, 1.0, 0.01)
-
-        #Display the resulting frame
-#        cv2.imshow('frame',crop_img)
-        #if cv2.waitKey(1) & 0xFF == ord('q'):
+            
 except KeyboardInterrupt:
     ZB.MotorsOff()
     
